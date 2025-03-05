@@ -13,7 +13,7 @@ class EEGFeatureNormalizationInterface:
         # Constructor
         self.root = root
         self.root.title("EEG Feature Normalization Interface")
-        self.root.geometry("700x600")
+        self.root.geometry("900x600")
         self.root.configure(bg="#f0f0f0")
 
         # Instance Variables
@@ -82,6 +82,12 @@ class EEGFeatureNormalizationInterface:
         create_button(button_frame, "Remove File", self.remove_file)
         create_button(button_frame, "Reset", self.reset)
         create_button(button_frame, "Start", self.start_normalization, side=tk.RIGHT)
+
+        # Dropdown (Standard/MinMax)
+        self.scaler_var = tk.StringVar(value="Standard")
+        scaler_dropdown = tk.OptionMenu(button_frame, self.scaler_var, "Standard", "MinMax")
+        scaler_dropdown.config(width=button_width, bg=button_bg)
+        scaler_dropdown.pack(side=tk.RIGHT, padx=default_pad, pady=default_pad)
 
         # Dropdown (Normal/Stroke)
         self.selection_var = tk.StringVar(value="Normal")
