@@ -26,7 +26,7 @@ def process(self):
             continue
         p_value = match.group()
 
-
+        # Get file directory of the EEG dataset
         file_dir = os.path.dirname(file).lower()
 
         # Determine eye condition (open eyes, close eyes)

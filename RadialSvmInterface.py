@@ -7,12 +7,12 @@ import svm
 import tkinter as tk
 from tkinter import filedialog, messagebox, scrolledtext, ttk
 
-class EEGSvmInterface:
+class EEGClassificationInterface:
     def __init__(self, root):
 
         # Constructor
         self.root = root
-        self.root.title("EEG SVM Interface")
+        self.root.title("EEG Classification Interface")
         self.root.geometry("700x600")
         self.root.configure(bg="#f0f0f0")
 
@@ -20,6 +20,7 @@ class EEGSvmInterface:
         self.output_dir = tk.StringVar()
         self.train_data_path = tk.StringVar()
         self.test_data_path = tk.StringVar()
+        self.model_file_path = tk.StringVar()
         self.progress_bar = None
 
         # GUI Setup
@@ -86,23 +87,26 @@ class EEGSvmInterface:
         # Browse Button
         create_button(test_data_frame, "Browse", self.browse_test_data)
 
+        # Model File Frame
+        model_file_frame = tk.Frame(self.root, bg=frame_bg)
+        model_file_frame.pack(pady=default_pad, fill=tk.X)
+
+        # Model File Label
+        label = tk.Label(model_file_frame, text="Model File Path:", bg=frame_bg, font=default_font)
+        label.pack(side=tk.LEFT, padx=default_pad, pady=default_pad)
+
+        # Model File Entry
+        model_file_entry = tk.Entry(model_file_frame, textvariable=self.model_file_path, font=default_font)
+        model_file_entry.pack(side=tk.LEFT, expand=True, fill=tk.X, padx=default_pad, pady=default_pad)
+
+        # Browse Button
+        create_button(model_file_frame, "Browse", self.browse_model)
+
         # Button Frame
         button_frame = tk.Frame(self.root, bg=frame_bg)
         button_frame.pack(pady=default_pad, fill=tk.X)
 
         create_button(button_frame, "Start", self.start_svm, side=tk.RIGHT)
-
-        # # Dropdown (Normal/Stroke)
-        # self.svm_var = tk.StringVar(value="rbf")
-        # svm_dropdown = tk.OptionMenu(button_frame, self.svm_var, "rbf", "Stroke")
-        # svm_dropdown.config(width=button_width, bg=button_bg)
-        # svm_dropdown.pack(side=tk.RIGHT, padx=default_pad, pady=default_pad)
-
-        # # Dropdown (Normal/Stroke)
-        # self.selection_var = tk.StringVar(value="Normal")
-        # selection_dropdown = tk.OptionMenu(button_frame, self.selection_var, "Normal", "Stroke")
-        # selection_dropdown.config(width=button_width, bg=button_bg)
-        # selection_dropdown.pack(side=tk.RIGHT, padx=default_pad, pady=default_pad)
 
         # Progress Frame
         progress_frame = tk.Frame(self.root, bg=frame_bg)
@@ -159,6 +163,12 @@ class EEGSvmInterface:
             self.test_data_path.set(file)
             self.log(f"Test data path set to: {os.path.normpath(file)}")
 
+    def browse_model(self):
+        file = filedialog.askopenfilename(filetypes=[("PKL Files", "*.pkl")])
+        if file:
+            self.model_file_path.set(file)
+            self.log(f"Model file path set to: {os.path.normpath(file)}")
+
     def log(self, message):
         self.log_box.insert(tk.END, message + "\n")
         self.log_box.yview(tk.END)
@@ -173,14 +183,10 @@ class EEGSvmInterface:
         if not self.output_dir.get():
             messagebox.showwarning("No Output Directory", "Please select an output directory.")
             return
-
-        target_process = None
-        # selected_value = self.selection_var.get()
-        # if "Normal" in selected_value:
-        #     target_process = normalizeNormal.process
-        #
-        # elif "Stroke" in selected_value:
-        #     target_process = normalizeStroke.process
+        if not self.model_file_path.get():
+            response = messagebox.askyesno("No Model File Selected", "No model file is selected. Create a new model?")
+            if not response:
+                return
 
         target_process = svm.process
 
@@ -197,5 +203,5 @@ class EEGSvmInterface:
 
 if __name__ == "__main__":
     root = tk.Tk()
-    app = EEGSvmInterface(root)
+    app = EEGClassificationInterface(root)
     root.mainloop()
